@@ -5,13 +5,14 @@ from matplotlib.animation import PillowWriter as pw
 import os.path
 import numpy as np
 
-##########################################################################
-# Description:                                                           #
-# Given a set of two time dependent differential equations, displays an  #
-# animation of the nullclines of that system of differential equations   #
-# over time. Users may edit the settings below as well as the dxt and    #
-# dyt functions to set their own system of ODEs.                         #
-##########################################################################
+############################################################################
+# Description:                                                             #
+# Given a set of two time dependent differential equations, displays an    #
+# animation of the nullclines of that system of differential equations     #
+# over time. Users may edit the settings below as well as the dxt and      #
+# dyt functions to set their own system of ODEs. Upon running, the program #
+# will initially ask the user whether to display or save the figure.       #
+############################################################################
 
 #Settings
 yncol='blue' # Color for the x nullcline
