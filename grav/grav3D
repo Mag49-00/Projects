@@ -1,0 +1,148 @@
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation as anim
+from matplotlib.animation import PillowWriter as pw
+from matplotlib.patches import Circle as circ
+import os.path
+import numpy as np
+from math import log,sqrt,atan,cos,sin,pi,e
+from random import randint, random, shuffle
+
+############################################################################
+# Description:                                                             #
+# Generates and simulates a set number of particles, and the gravitational #
+# forces between them using real-world physics. Unlike other versions, the #
+# grid is 3D, but collisions between particles is not supported. Options   #
+# for users are below.                                                     #
+############################################################################
+
+scale=60 # size of the grid
+gravConst=0.0001 # gravitational constant -- higher=larger effect from gravity
+maxScale=3 # maximum size of particles
+nParticles=20 # number of particles, aside from great attractor in center, to spawn
+
+fig,ax=plt.subplots()
+
+"""
+Class to store a single point.
+
+Methods:
+sortBodies():
+    static method
+    sorts list of all bodies by their z (depth) coordinate -- used to ensure objects in front are drawn over objects behind
+step():
+    static method
+    handles the movement and collisions of all bodies in a single step of the simulation.
+__init__(float mass, list posVect, list velVect, str color, bool immovable):
+    initializes a particle with given mass, position (posVect), and velocity (velVect)
+    posVect and velVect should both be triples: (x,y,z) representing the appropriate vector
+    color indicates the color of the particle in the simulation
+    particles with immovable set to true will not ever change their velocity away from their starting velocity.
+radius():
+    returns the particle's radius, as determined by its mass
+drawSize():
+    returns the drawing size of the body -- objects closer to the viewer (larger z value) appear larger
+draw():
+    draws the body to the plot
+dist(Body other):
+    returns the distance from one body to another
+move():
+    moves the particle in accordance with its current velocity
+grav(Body other):
+    accelerates a body in accordance with gravitational attraction from another body
+accel(float x, float y):
+    accelerates a body with vector (x, y)
+"""
+class Body:
+    allBodies=[]
+
+    @staticmethod
+    def sortBodies():
+        Body.allBodies.sort(key=lambda x: x.pos[2])
+
+    def step():
+        Body.sortBodies()
+        bodies=Body.allBodies
+        for body in bodies:
+            for target in bodies:
+                    body.grav(target)
+            body.move()
+            body.draw()
+    
+    def __init__(self,mass,posVect,velVect,color="b",immovable=False):
+        self.mass=mass
+        self.pos=np.array(posVect).astype("float64")
+        self.vel=np.array(velVect).astype("float64")
+        self.color=color
+        self.immovable=immovable
+        Body.allBodies.append(self)
+
+    def radius(self):
+        return log(self.mass)/10
+
+    def drawSize(self):
+        return self.radius()*e**(log(maxScale)*self.pos[2]/scale)
+
+    def draw(self):
+        if self.pos[2]<=scale and abs(self.pos[0])<=scale and abs(self.pos[1])<=scale:
+            circle=circ((self.pos[0],self.pos[1]),self.drawSize(),color=self.color)
+            ax.add_patch(circle)
+
+    def dist(self,other):
+        vect=other.pos-self.pos
+        d=sqrt(sum([x**2 for x in vect]))
+        return (d,vect/d)
+
+    def move(self):
+        self.pos+=self.vel
+
+    def grav(self,other):
+        if self.immovable or self==other:
+            return
+        d,vect=self.dist(other)
+        F=gravConst*other.mass/(d**2)
+        self.accel(F*vect)
+
+    def accel(self,vect):
+        self.vel+=vect
+        
+colors=["b","g","r","c","m","y"] #colors allowed for bodies
+
+# Spawns bodies. Currently set to spawn random particles a set distance from the main attractor,
+# with the number of particles determined by nParticles.
+Body(10000,[0,0,0],[0,0,0],"k",True)
+for k in range(nParticles):
+    m=random()*10+5
+    r=random()*1.5+0.5
+    t=random()*2*pi
+    t2=random()*pi
+    x=r*cos(t)
+    y=r*sin(t)*cos(t2)
+    z=r*sin(t)*sin(t2)
+
+    r=random()*0.5+0.5
+    t=random()*2*pi
+    t2=random()*pi
+    vx=r*cos(t)
+    vy=r*sin(t)*cos(t2)
+    vz=r*sin(t)*sin(t2)
+    shuffle(colors)
+    Body(m,[x,y,z],[vx,vy,vz],colors[0])
+    
+# handles one step in the animation process
+def sketch(i):
+    ax.clear()
+    ax.set_xlim([-scale,scale])
+    ax.set_ylim([-scale,scale])
+    Body.step()
+    return []
+
+# runs the simulation
+anim=anim(fig,sketch,interval=40,frames=100,repeat=True)
+i=input("show? ")
+if i.lower()=='y':
+    plt.show()
+else:
+    n=0
+    while os.path.isfile("fig"+str(n)):
+        n+=1
+    anim.save('fig'+str(n)+".gif",dpi=300,writer=pw(fps=25))
