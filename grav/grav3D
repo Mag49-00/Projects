@@ -25,6 +25,21 @@ fig,ax=plt.subplots()
 """
 Class to store a single point.
 
+Variables:
+list allBodies:
+    static variable
+    stores a list of all created Body objects
+float mass:
+    stores the mass of a Body; used for draw size of the particle and gravitational force of the object
+np.array pos:
+    triple storing the current position vector of the Body
+np.array vel:
+    triple storing the current velocity vector of the Body
+string color:
+    color the Body should be drawn with
+bool immoveable:
+    if true, the Body will never change its velocity
+
 Methods:
 sortBodies():
     static method
