@@ -30,6 +30,21 @@ plt.rcParams["animation.ffmpeg_path"]='C:\\ffmpeg\\bin\\ffmpeg.exe'
 """
 Class to store a single point.
 
+Variables:
+list allPoints:
+    static variable
+    stores a list of all created Point objects
+float mass:
+    stores the mass of a Point; used for draw size of the particle and gravitational force of the object
+float posx:
+    x-coordinate of the Point's position vector
+float posy:
+    y-coordinate of the Point's position vector
+float velx:
+    x-coordinate of the Point's velocity vector
+float vely:
+    y-coordinate of the Point's position vector
+    
 Methods:
 collsionCheck():
     static method
