@@ -40,6 +40,28 @@ fig,ax=plt.subplots()
 """
 Class to store a single point.
 
+Variables:
+list allBodies:
+    static variable
+    stores a list of all created Body objects
+list exempt:
+    static variable
+    stores a list of all Bodys that should be exempted from gravitational forces.
+float mass:
+    stores the mass of a Body; used for draw size of the particle and gravitational force of the object
+float x:
+    x-coordinate of Body's position vector
+float y:
+    y-coordinate of Body's position vector
+float xv:
+    x-coordinate of Body's velocity vector
+float yv:
+    y-coordinate of Body's velocity vector
+string color:
+    color the Body should be drawn with
+bool immoveable:
+    if true, the Body will never change its velocity
+    
 Methods:
 collsionCheck():
     static method
